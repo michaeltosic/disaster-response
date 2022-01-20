@@ -1,16 +1,6 @@
 # Check the versions of libraries
 import sys
-print('Python: {}'.format(sys.version))
-
-import numpy
-print('numpy: {}'.format(numpy.__version__))
-
-import pandas
-print('pandas: {}'.format(pandas.__version__))
-
-import sklearn
-print('sklearn: {}'.format(sklearn.__version__))
-
+import pandas as pd
 from sqlalchemy import create_engine
 
 def load_data(messages_filepath, categories_filepath):
@@ -50,8 +40,8 @@ def clean_data(df):
     return df
 
 def save_data(df, database_filename):
-    pass  
-
+    engine = create_engine('sqlite:///data/DisasterResponse.db')
+    df.to_sql(database_filename, engine, index=False)  
 
 def main():
     if len(sys.argv) == 4:
