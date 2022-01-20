@@ -1,9 +1,33 @@
 import sys
+# import libraries
+from sqlalchemy import create_engine
+import pandas as pd
+import re
 
+#needed for text processing:
+import nltk
+nltk.download('stopwords')
+nltk.download('punkt')
+nltk.download('wordnet')
+from nltk.corpus import stopwords
+from nltk.stem.wordnet import WordNetLemmatizer
+from nltk.tokenize import word_tokenize
 
 def load_data(database_filepath):
-    pass
-
+    """ Function loads data from a SQL-database at the specified path
+    INPUT
+    SQL Database filepath
+    OUTPUT
+    X: features from database table
+    y: labels from database table
+    category_names: categories of labels
+    """
+    engine = create_engine('sqlite:///' + database_filepath)
+    df = pd.read_sql_table("Table", engine)
+    X = df.message.values
+    y = df.drop(["id","original","genre", "message", "index"], axis = "columns")
+    category_names = set(y.columns)
+    return (X, y, category_names)
 
 def tokenize(text):
     pass
