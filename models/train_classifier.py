@@ -1,7 +1,11 @@
-import sys
 # import libraries
-from sqlalchemy import create_engine
+import sys
 import pandas as pd
+
+#sqldatabase:
+from sqlalchemy import create_engine
+
+#regex:
 import re
 
 #needed for text processing:
@@ -30,7 +34,24 @@ def load_data(database_filepath):
     return (X, y, category_names)
 
 def tokenize(text):
-    pass
+    
+    url_regex = 'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
+    
+    detected_urls = re.findall(url_regex, text)
+    for url in detected_urls:
+        text = text.replace(url, "urlplaceholder")
+ 
+    # normalize case and remove punctuation using regex
+    text = re.sub(r"[^a-zA-Z0-9]", " ", text.lower())
+    
+    # tokenize text with the tokenizer
+    tokens = word_tokenize(text)
+    
+    # lemmatize and remove stop words
+    lemmatizer = WordNetLemmatizer()
+    tokens = [lemmatizer.lemmatize(word) for word in tokens if word not in stopwords.words("english")]
+
+    return tokens
 
 
 def build_model():
