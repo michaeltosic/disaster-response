@@ -17,6 +17,25 @@ from nltk.corpus import stopwords
 from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 
+#for pipeline:
+from sklearn.pipeline import Pipeline
+
+#for estimators:
+from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
+from sklearn.multioutput import MultiOutputClassifier
+from sklearn.ensemble import RandomForestClassifier
+
+#for training:
+from sklearn.model_selection import train_test_split
+
+#for testing:
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import classification_report
+
+#for Grid search:
+from sklearn.model_selection import GridSearchCV
+
+
 def load_data(database_filepath):
     """ Function loads data from a SQL-database at the specified path
     INPUT
@@ -34,6 +53,11 @@ def load_data(database_filepath):
     return (X, y, category_names)
 
 def tokenize(text):
+    """Function for text processing, in particular it replaces urls, tokenizes and lemmatizes the words in a given text.
+    INPUT
+    text: text to process as str
+    OUTPUT:
+    tokens: list of tokenized words"""
     
     url_regex = 'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
     
@@ -53,10 +77,13 @@ def tokenize(text):
 
     return tokens
 
-
+#model definition
 def build_model():
-    pass
-
+    pipeline = Pipeline([
+        ('vect', CountVectorizer(tokenizer=tokenize)),
+        ('tfidf', TfidfTransformer()),
+        ('clf', MultiOutputClassifier(RandomForestClassifier()))])
+    return pipeline
 
 def evaluate_model(model, X_test, Y_test, category_names):
     pass
