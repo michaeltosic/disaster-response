@@ -86,7 +86,12 @@ def build_model():
         ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf', TfidfTransformer()),
         ('clf', MultiOutputClassifier(RandomForestClassifier()))])
-    return pipeline
+    
+    parameters = {'clf__estimator__n_estimators': [10, 50, 100],
+              'clf__estimator__min_samples_split': [2, 3]}
+    
+   # cv = GridSearchCV(pipeline, param_grid=parameters, n_jobs=-1)
+    return pipeline #cv
 
 def evaluate_model(model, X_test, Y_test):
     """Function predicts Y_pred based on X_test. It then goes through 
