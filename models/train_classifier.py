@@ -94,10 +94,11 @@ def build_model():
         ('tfidf', TfidfTransformer()),
         ('clf', MultiOutputClassifier(RandomForestClassifier()))])
     
-    parameters = {'clf__estimator__n_estimators': [10, 100],
-              'clf__estimator__min_samples_split': [2, 3]}
+    parameters = {'vect__ngram_range': ((1, 1), (1, 2))
+                  #'clf__estimator__n_estimators': [10, 20]#,
+                 }# 'clf__estimator__min_samples_split': [2, 3]}
     
-    cv = GridSearchCV(pipeline, param_grid=parameters, n_jobs=-1)
+    cv = GridSearchCV(pipeline, param_grid=parameters, n_jobs=-1, cv=2, verbose = 3)
     return cv #pipeline
 
 def evaluate_model(model, X_test, Y_test):
