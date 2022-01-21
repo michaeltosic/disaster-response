@@ -7,7 +7,8 @@ from nltk.tokenize import word_tokenize
 
 from flask import Flask
 from flask import render_template, request, jsonify
-from plotly.graph_objs import Bar
+from plotly.graph_objs import Bar, Pie
+
 from sklearn.externals import joblib
 from sqlalchemy import create_engine
 
@@ -43,6 +44,10 @@ def index():
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
     
+    #Visual 1: Sum of messages per category in cleaned data-set
+    sum_per_category = df.drop(["id", "message", "original", "genre"], axis = "columns").sum()
+    sum_per_category_names = list(sum_per_category.index)    
+    
     # create visuals
     # TODO: Below is an example - modify to create your own visuals
     graphs = [
@@ -61,6 +66,24 @@ def index():
                 },
                 'xaxis': {
                     'title': "Genre"
+                }
+            }
+        },
+        {
+            'data': [
+                Bar(
+                    x=sum_per_category_names,
+                    y=sum_per_category
+                )
+            ],
+
+            'layout': {
+                'title': 'Sum of messages per category in cleaned data-set',
+                'yaxis': {
+                    'title': "Sum"
+                },
+                'xaxis': {
+                    'title': "Category"
                 }
             }
         }
