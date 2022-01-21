@@ -35,6 +35,9 @@ from sklearn.metrics import classification_report
 #for Grid search:
 from sklearn.model_selection import GridSearchCV
 
+#for saving model
+import pickle
+
 
 def load_data(database_filepath):
     """ Function loads data from a SQL-database at the specified path
@@ -49,7 +52,7 @@ def load_data(database_filepath):
     df = pd.read_sql_table("Table", engine)
     X = df.message.values
     y = df.drop(["id","original","genre", "message", "index"], axis = "columns")
-    category_names = set(y.columns)
+    category_names = y.columns
     return (X, y, category_names)
 
 def tokenize(text):
@@ -85,8 +88,21 @@ def build_model():
         ('clf', MultiOutputClassifier(RandomForestClassifier()))])
     return pipeline
 
-def evaluate_model(model, X_test, Y_test, category_names):
-    pass
+def evaluate_model(model, X_test, Y_test):
+    """Function predicts Y_pred based on X_test. It then goes through 
+    columns of Y_test and elements for Y_preds and creates a classification report for every column. 
+    The precision, f1-score, recall and support are provided.
+    INPUT 
+    model: ML model that has been trained
+    X_test: test set X
+    Y_test: test set Y
+    OUTPUT None - Report is printed
+    """
+    Y_pred = model.predict(X_test)
+    for index,col in enumerate(Y_test.columns):
+        print("{}. category = {}".format(index+1,col))
+        print(classification_report(Y_test[col], Y_pred[:,index]))
+    return None
 
 
 def save_model(model, model_filepath):
@@ -107,7 +123,7 @@ def main():
         model.fit(X_train, Y_train)
         
         print('Evaluating model...')
-        evaluate_model(model, X_test, Y_test, category_names)
+        evaluate_model(model, X_test, Y_test)
 
         print('Saving model...\n    MODEL: {}'.format(model_filepath))
         save_model(model, model_filepath)
