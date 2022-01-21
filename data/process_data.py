@@ -59,7 +59,7 @@ def save_data(df, database_filename):
     OUTPUT
     None - dataframe is saved."""
     engine = create_engine('sqlite:///data/DisasterResponse.db')
-    df.to_sql(database_filename, engine, index=False)  
+    df.to_sql("Table", engine, index=False)  
 
 def main():
     if len(sys.argv) == 4:

@@ -49,9 +49,10 @@ def load_data(database_filepath):
     category_names: categories of labels
     """
     engine = create_engine('sqlite:///' + database_filepath)
+    print(engine)
     df = pd.read_sql_table("Table", engine)
     X = df.message.values
-    y = df.drop(["id","original","genre", "message", "index"], axis = "columns")
+    y = df.drop(["id","original","genre", "message"], axis = "columns")
     category_names = y.columns
     return (X, y, category_names)
 
@@ -82,16 +83,22 @@ def tokenize(text):
 
 #model definition
 def build_model():
+    """Functions creates a machine learning pipelne and performs a grid search to finde adequate parameters.
+    INPUT
+    None
+    OUTPUT
+    ML model with parameters aquired with GridSearch
+    """
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf', TfidfTransformer()),
         ('clf', MultiOutputClassifier(RandomForestClassifier()))])
     
-    parameters = {'clf__estimator__n_estimators': [10, 50, 100],
+    parameters = {'clf__estimator__n_estimators': [10, 100],
               'clf__estimator__min_samples_split': [2, 3]}
     
-   # cv = GridSearchCV(pipeline, param_grid=parameters, n_jobs=-1)
-    return pipeline #cv
+    cv = GridSearchCV(pipeline, param_grid=parameters, n_jobs=-1)
+    return cv #pipeline
 
 def evaluate_model(model, X_test, Y_test):
     """Function predicts Y_pred based on X_test. It then goes through 
