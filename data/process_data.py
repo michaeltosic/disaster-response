@@ -34,11 +34,10 @@ def clean_data(df):
     categories.columns = category_colnames     # rename the columns of `categories`
 
     print("Converting category values to 0 or 1.")
-
-    #convert category values to just numbers 0 or 1:
     for column in categories:
         categories[column] = categories[column].astype(str).str[-1:]# set each value to be the last character of the string
         categories[column] = categories[column].astype(int)# convert column from string to numeric
+        categories[column] = categories[column].apply(lambda x: 0 if (x == 0) else 1) #convert integers larger than zero to 1
 
     print("Wrapping up: Putting together the new clean df.")
     #wrap-up and concat
